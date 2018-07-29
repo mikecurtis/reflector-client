@@ -40,7 +40,7 @@ class ITachClient extends EventEmitter {
 	/**
 	 * Create an ITach client.
 	 *
-	 * @param {String} address - a host:port pair
+	 * @param {String} address A host:port pair to connect to.
 	 */
 	constructor (address) {
 		super();

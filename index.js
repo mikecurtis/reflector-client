@@ -9,8 +9,10 @@ const REFLECTOR_ADDR = process.argv[2]
 const ITACH_ADDR = process.argv[3]
 const CODES_FILE = process.argv[4]
 
-const codes = require('./codes.js');
 const logger = require('./logger.js');
+
+const codes = require('./codes.js');
+const CODES = new codes(CODES_FILE);
 
 const itach = require('./itachclient.js');
 const ITACH = new itach(ITACH_ADDR);
@@ -24,7 +26,7 @@ WS.onopen = function () {
 };
 
 WS.onmessage = function (event) {
-	var c = codes[event.data];
+	var c = CODES.code(event.data);
 	if (c == undefined) {
 		console.log('Undefined command: ' + event.data);
 		return;
