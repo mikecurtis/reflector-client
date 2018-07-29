@@ -1,0 +1,23 @@
+{
+  "name": "chesterfied-client",
+  "version": "0.1.0",
+  "description": "Reflector Client",
+  "engines": {
+    "node": "8.9.1"
+  },
+  "main": "client.js",
+  "scripts": {
+    "start": "node client.js"
+  },
+  "dependencies": {
+    "ws": "^1.1.0",
+    "net": "^1.0.2",
+    "async": "^2.0.0",
+    "events": "^3.0.0"
+  },
+  "keywords": [
+    "node",
+    "heroku"
+  ],
+  "license": "MIT"
+}
