@@ -12,6 +12,8 @@ const RETRY_INTERVAL = 1000;
 
 const logger = require('./logger.js');
 
+const sanitizer = require('sanitizer');
+
 const codes = require('./codes.js');
 const CODES = new codes(CODES_FILE);
 
@@ -76,14 +78,15 @@ class RefreshingSocket {
 }
 
 const rs = new RefreshingSocket(REFLECTOR_ADDR, RETRY_INTERVAL, function (e) {
-	var c = CODES.code(e.data);
-	if (c == undefined) {
-		console.log('Undefined command: ' + e.data);
+	var data = sanitizer.sanitize(e.data);
+	var command = CODES.code(data);
+	if (command == undefined) {
+		console.log('Undefined command: ' + data);
 		return;
 	}
-	for (var i = 0; i < c.length; i++) {
-		ITACH.send(c[i], function(result) {
-				logger.debug(result);
+	for (var i = 0; i < command.length; i++) {
+		ITACH.send(command[i], function(result) {
+				logger.debug('Success: ' + command + ' => ' + result.data);
 			}
 		);
 	}
