@@ -39,7 +39,11 @@ class RefreshingSocket {
 		// Ping channel to keep alive.
 		// Required to prevent Heroku Free from sleeping dyno.
 		setInterval(function () {
-			this.instance.ping('0');
+			try {
+				this.instance.ping('0');
+			} catch (err) {
+				// ignore.
+			}
 		}.bind(this), retryInterval);
 	}
 
