@@ -57,16 +57,15 @@ class ITachClient extends EventEmitter {
 		this.requests = {};
 		this.request_id = 0;
 
-		var client = this;
 		this.send_queue = async.queue(function (data, callback) {
 			var result = false;
-			if (client.is_connected) {
-				client.emit('debug', 'Data sent to itach: ' + data);
-				client.connection.write(data + '\r\n');
+			if (this.is_connected) {
+				this.emit('debug', 'Data sent to itach: ' + data);
+				this.connection.write(data + '\r\n');
 				result = true;
 			} else {
-				client.emit('error', 'Not connected to itach - Can not send data.');
-				client.emit('debug', data);
+				this.emit('error', 'Not connected to itach - Can not send data.');
+				this.emit('debug', data);
 			}
 			if (typeof callback === 'function') {
 				callback({
@@ -74,7 +73,7 @@ class ITachClient extends EventEmitter {
 					'msg': ''
 				});
 			}
-		}, 1);
+		}.bind(this), 1);
 
 		this.on('debug', logger.debug);
 		this.on('error', logger.error);
@@ -83,8 +82,6 @@ class ITachClient extends EventEmitter {
 	}
 
 	connect() {
-		var client = this;
-
 		if (this.is_connected) {
 			console.log('Already connected.');
 			return
@@ -99,27 +96,27 @@ class ITachClient extends EventEmitter {
 		}
 
 		this.connection.on('connect', function() {
-			client.is_connected = true;
-			client.emit('debug', 'Connected to itach: ' + client.host + ':' + client.port);
-			client.emit('connect');
-		});
+			this.is_connected = true;
+			this.emit('debug', 'Connected to itach: ' + this.host + ':' + this.port);
+			this.emit('connect');
+		}.bind(this));
 
 		this.connection.on('close', function() {
-			client.is_connected = false;
-			client.emit('debug', 'Disconnected from itach: ' + client.host + ':' + client.port);
-			client.emit('close', false);
-			if (client.reconnect) {
-				setTimeout(client.connect, client.reconnect_sleep + 1000);
+			this.is_connected = false;
+			this.emit('debug', 'Disconnected from itach: ' + this.host + ':' + this.port);
+			this.emit('close', false);
+			if (this.reconnect) {
+				setTimeout(this.connect, this.reconnect_sleep + 1000);
 			}
-		});
+		}.bind(this));
 
 		this.connection.on('data', function(data) {
 			data = data.toString().replace(/[\n\r]$/, '');
-			client.emit('debug', 'Received data from itach: ' + data);
+			this.emit('debug', 'Received data from itach: ' + data);
 			var parts = data.split(',');
 			var id = parts[2];
-			if (client.requests[id] === undefined) {
-				client.emit('error', 'itach request id ' + id + ' does not exist.');
+			if (this.requests[id] === undefined) {
+				this.emit('error', 'itach request id ' + id + ' does not exist.');
 				return;
 			}
 
@@ -127,17 +124,17 @@ class ITachClient extends EventEmitter {
 			var result = (parts[0] === 'completeir');
 
 			if (parts[0].match(/^ERR/)) {
-				client.emit('error', 'itach error: ' + parts[1] + ': ' + ERRORCODES[parts[1]]);
+				this.emit('error', 'itach error: ' + parts[1] + ': ' + ERRORCODES[parts[1]]);
 			}
 
-			if (typeof client.requests[id].callback === 'function') {
-				client.requests[id].callback({
+			if (typeof this.requests[id].callback === 'function') {
+				this.requests[id].callback({
 					'result': result,
 					'data': data
 				});
 			}
-			delete client.requests[id];
-		});
+			delete this.requests[id];
+		}.bind(this));
 
 		this.connection.on('debug', logger.debug);
 		this.connection.on('error', logger.error);
@@ -163,10 +160,9 @@ class ITachClient extends EventEmitter {
 		parts[2] = id; // Add ID to keep track of return message
 		data = parts.join(',');
 
-		var client = this;
 		this.send_queue.push(data, function (res) {
 			if (res.result) {
-				client.requests[id] = {
+				this.requests[id] = {
 					'id': id,
 					'data': data,
 					'callback': callback
@@ -177,7 +173,7 @@ class ITachClient extends EventEmitter {
 					'msg': res.msg
 				});
 			}
-		});
+		}.bind(this));
 	}
 
 }
