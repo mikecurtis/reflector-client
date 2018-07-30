@@ -80,9 +80,11 @@ class RefreshingSocket {
 const rs = new RefreshingSocket(REFLECTOR_ADDR, RETRY_INTERVAL, function (e) {
 	var data = sanitizer.sanitize(e.data);
 	var command = CODES.code(data);
-	if (command == undefined) {
-		console.log('Undefined command: ' + data);
+	if (command === undefined) {
+		logger.debug('Undefined command: ' + data);
 		return;
+	} else {
+		logger.debug('Received command from WebSocket: ' + data + ' => ' + command);
 	}
 	for (var i = 0; i < command.length; i++) {
 		ITACH.send(command[i], function(result) {
