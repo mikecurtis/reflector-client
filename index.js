@@ -67,6 +67,10 @@ class RefreshingSocket {
 
 		newInstance.onmessage = this.onMessage;
 
+		newInstance.onerror = function(err) {
+			logger.error('WebSocket received error: ' + err);
+		}
+
 		var oldInstance = this.instance;
 		delete this.instance;
 		this.instance = newInstance;
