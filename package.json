@@ -1,5 +1,5 @@
 {
-  "name": "chesterfied-client",
+  "name": "reflector-client",
   "version": "0.1.0",
   "description": "Reflector Client",
   "engines": {
@@ -16,6 +16,7 @@
     "events": "^3.0.0",
     "sanitizer": "^0.1.3"
   },
+  "repository": "github:mikecurtis/reflector-client",
   "keywords": [
     "node",
     "heroku"
