@@ -10,7 +10,7 @@
     "start": "node client.js"
   },
   "dependencies": {
-    "ws": "^1.1.0",
+    "ws": "^3.3.1",
     "net": "^1.0.2",
     "async": "^2.0.0",
     "events": "^3.0.0",
